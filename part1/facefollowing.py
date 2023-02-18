@@ -17,6 +17,8 @@ xPID = cvzone.PID([0.3, 0, 0.1], wi // 2)
 # me.streamoff()
 # me.streamon()
 
+myPlotX = cvzone.LivePlot(yLimit=[-wi // 2, wi // 2], char='X')
+
 while True:
     _, img = cap.read()
     # img = me.get_frame_read().frame
@@ -25,6 +27,7 @@ while True:
     if bboxs:
         cx, cy = bboxs[0]["center"]
         xVal = int(xPID.update(cx))
+        imgPlotX = myPlotX.update(xVal)
         img = xPID.draw(img, [cx, cy])
 
         # cv2.putText(img, str(xVal), (50, 100),
@@ -36,7 +39,9 @@ while True:
         # cv2.putText(img, str(error), (50, 100),
         #             cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
 
-    cv2.imshow('Image', img)
+    imgStacked = cvzone.stackImages([img, imgPlotX], 2, 1)
+
+    cv2.imshow('Image', imgStacked)
 
     if cv2.waitKey(5) & 0xFF == ord('q'):
         break
